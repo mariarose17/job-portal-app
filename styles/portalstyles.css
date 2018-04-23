@@ -1,0 +1,102 @@
+
+
+.topnav{
+    background-color: #1b2229;
+    height: 60px;  
+}
+
+.navbar{
+    background-color: #1b2229;
+    color: white !important;
+   
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color: white !important;
+}
+
+.loginHeading{
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    background-color: grey;
+    color: white;
+    font-weight: bolder;
+}
+
+.hddiv{
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border: 1px solid grey;
+    border-radius: 5px;
+    margin-top: 100px;
+    margin-bottom: 30px;
+}
+
+.btnLogin{
+    float: right;
+}
+
+.bg-light {
+    background-color: #c4b5b5 !important;
+}
+
+.navbar-brand {
+
+    color: white !important;
+}
+a{
+    color: white !important;
+}
+
+.mySide{
+    width: 220px;
+    background-color: #1b2229;
+    color: white;
+   height: 100vh;
+   float: left;
+
+}
+
+.adminNavLink{
+    color: white !important;
+}
+
+.buttonSubmit{
+    float:right !important;
+    background-color: #9f306d !important;
+}
+
+.buttonSubmitApplication{
+    box-shadow: none !important;
+}
+.cardHeader{
+    font-size: 20px !important;
+    font-weight: 800 !important;
+
+}
+
+.jobTitle{
+    font-size: 24px !important;
+}
+
+/* .far fa-edit{
+    font-size: 20px;
+}
+.fas fa-trash-alt{
+    font-size: 20px;
+} */
+.svg-inline--fa{
+    font-size: 15px;
+}
+
+.tablePostsDiv{
+    margin-left: 280px;
+    margin-right: 40px;
+}
+
+.svg-inline--fa {
+    font-size: 25px !important;
+}
