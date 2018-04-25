@@ -39,7 +39,7 @@ export default class Navtop extends React.Component {
             <Nav className="ml-auto" navbar>
               
               <NavItem>
-              <NavLink className="loginlink" tag={Link} to="/login">Login</NavLink>
+              <NavLink className="loginlink" tag={Link} to="/login">Admin Portal</NavLink>
              
               </NavItem>
               

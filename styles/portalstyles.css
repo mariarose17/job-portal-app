@@ -100,3 +100,30 @@ a{
 .svg-inline--fa {
     font-size: 25px !important;
 }
+
+.postViewContent{
+    color: black !important;
+}
+#jobTitle{
+    color: black !important;
+}
+#company{
+    color: black !important;
+}
+#locations{
+    color: black !important;
+}
+#postby{
+    color: black !important;
+}
+#requirements{
+    color: black !important;
+}
+#description{
+    color: black !important;
+}
+
+.listHd{
+    color: #c60c58 !important;
+    margin-top: 30px;
+}

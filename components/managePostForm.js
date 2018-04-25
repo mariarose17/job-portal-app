@@ -13,7 +13,9 @@ import { patchCall } from '../services/api';
 // import Dialog from 'material-ui/Dialog';
 import Badge from 'material-ui/Badge';
 import IconButton from 'material-ui/IconButton';
-import NotificationsIcon from 'material-ui/svg-icons/social/notifications';
+import validator from 'validator';
+import ApplicantsList from './applicantsList'
+
 
 
 
@@ -47,6 +49,9 @@ const styles = {
     labelColor: grey50,
     deleteColor: {
         color: red500
+    },
+    input: {
+        color: pink900
     }
 };
 
@@ -58,8 +63,11 @@ export default class ManagePostForm extends Component {
         super(props);
         this.state = {
             posts: [],
+            applicants: [],
             height: '550px',
             open: false,
+            openView: false,
+            openDelete: false,
             title: '',
             company: '',
             postedon: '',
@@ -68,11 +76,20 @@ export default class ManagePostForm extends Component {
             description: '',
             requirements: '',
             _postId: '',
-            count: ''
+            count: '',
+            titleError: '',
+            companyError: '',
+            postedbyError: '',
+            locationError: '',
+            descriptionError: '',
+            requirementsError: ''
             // page: 0,
             // rowsPerPage: 5,
 
         }
+
+
+
         this.handleUpdate = this.handleUpdate.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
@@ -83,6 +100,8 @@ export default class ManagePostForm extends Component {
         this.handleLocationChange = this.handleLocationChange.bind(this);
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleRequirementsChange = this.handleRequirementsChange.bind(this);
+        this.handleCloseView = this.handleCloseView.bind(this);
+        this.handleCloseDelete = this.handleCloseDelete.bind(this)
         // this.handleChangePage = this.handleChangePage.bind(this);
         // this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     }
@@ -110,6 +129,80 @@ export default class ManagePostForm extends Component {
 
     }
 
+
+    handleValidations() {
+        var errorFlag = 0;
+
+        if (validator.isEmpty(this.state.title)) {
+            errorFlag = 1;
+            this.setState({
+                titleError: "Enter job title"
+            })
+
+        }
+
+        if (validator.isEmpty(this.state.postedby)) {
+            errorFlag = 1;
+            this.setState({
+                postedbyError: "Enter posted for data"
+            })
+
+        }
+
+        if (validator.isEmpty(this.state.company)) {
+            errorFlag = 1;
+            this.setState({
+                companyError: "Enter Organization name"
+            })
+
+        }
+        if (validator.isEmpty(this.state.location)) {
+            errorFlag = 1;
+            this.setState({
+                locationError: "Enter job locations"
+            })
+
+        }
+        if (validator.isEmpty(this.state.description)) {
+            errorFlag = 1;
+            this.setState({
+                descriptionError: "Enter description"
+            })
+
+
+        }
+
+        if (validator.isEmpty(this.state.requirements)) {
+            errorFlag = 1;
+            this.setState({
+                requirementsError: "Enter requirements"
+            })
+
+        }
+
+
+        if (errorFlag == 1)
+            return false;
+        else
+            return true;
+
+
+    }
+
+    clearErrorTexts() {
+
+        this.setState({
+            titleError: '',
+            companyError: '',
+            postedbyError: '',
+            locationError: '',
+            descriptionError: '',
+            requirementsError: ''
+        });
+
+    }
+
+
     // handleChangePage(event, page) {
     //     this.setState({ page });
     // };
@@ -122,22 +215,25 @@ export default class ManagePostForm extends Component {
 
 
         var url = "updatepost";
-        putCall(url, this.state).then((response) => {
+        if (this.handleValidations()) {
+            putCall(url, this.state).then((response) => {
 
-            console.log(response);
-            if (response.status == 200) {
-                alert("Successful.....");
-                this.handleClose();
-                // this.handleOpen();
-                window.location.reload();
+                console.log(response);
+                if (response.status == 200) {
+                    alert("Update Successful.....");
+                    this.handleClose();
+                    // this.handleOpen();
+                    window.location.reload();
 
+                }
+                else {
+                    alert("Update Failure.....");
+                }
             }
-            else {
-                alert("Failure.....");
-            }
+
+            );
         }
 
-        );
 
     }
 
@@ -150,7 +246,7 @@ export default class ManagePostForm extends Component {
             console.log(response);
             if (response.status == 200) {
                 alert("Successful.....");
-                this.handleClose();
+                this.handleCloseDelete();
                 // this.handleOpen();
                 window.location.reload();
 
@@ -165,38 +261,72 @@ export default class ManagePostForm extends Component {
     }
 
 
-    handleOpen(key) {
+    handleOpen(row, column, event) {
 
+        console.log("row..." + row + "column..." + column);
 
-        this.setState({ open: true });
-
-
-        getCall(this.state.posts[key]._id).then((response) => {
+        if (column == 4) {
             this.setState({
-                count: response.data.count
+                openView: true,
+                // open: false,
+                // openDelete: false
             });
-            console.log("count..." + response.data.count);
+
+        }
+        if (column == 5) {
+            this.setState({
+                open: true,
+                // openView: false,
+                // openDelete: false
+            });
+
+        }
+        if (column == 6) {
+            this.setState({
+                openDelete: true,
+                // open: false,
+                // openView: false,
+            });
+
+        }
+
+
+
+        getCall('applicants/' + this.state.posts[row]._id).then((response) => {
+            this.setState({
+                count: response.data.length,
+                applicants: response.data
+            });
+            console.log("count..." + response.data.length);
 
         });
-        console.log(this.state.posts[key]);
+        console.log(this.state.posts[row]);
         this.setState({
-            title: this.state.posts[key].title,
-            company: this.state.posts[key].company,
+            title: this.state.posts[row].title,
+            company: this.state.posts[row].company,
             postedon: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate(),
-            postedby: this.state.posts[key].postedby,
-            location: this.state.posts[key].location,
-            description: this.state.posts[key].description,
-            requirements: this.state.posts[key].requirements,
-            _postId: this.state.posts[key]._id,
+            postedby: this.state.posts[row].postedby,
+            location: this.state.posts[row].location,
+            description: this.state.posts[row].description,
+            requirements: this.state.posts[row].requirements,
+            _postId: this.state.posts[row]._id,
         });
 
-        getCall(this.state.posts[key]._id).then((response) => {
+        // getCall(this.state.posts[key]._id).then((response) => {
 
-        });
+        // });
     };
 
     handleClose() {
         this.setState({ open: false });
+    };
+
+    handleCloseView() {
+        this.setState({ openView: false });
+    };
+
+    handleCloseDelete() {
+        this.setState({ openDelete: false });
     };
 
     handleTiltleChange(event) {
@@ -229,12 +359,7 @@ export default class ManagePostForm extends Component {
                 primary={true}
                 onClick={this.handleClose}
             />,
-            <FlatButton
-                label="Delete"
-                //primary={true}
-                onClick={this.handleDelete}
-                labelStyle={styles.deleteColor}
-            />,
+
             <FlatButton
                 label="Update"
                 secondary={true}
@@ -242,31 +367,57 @@ export default class ManagePostForm extends Component {
                 onClick={this.handleUpdate}
             />,
         ];
+
+        const actionsView = [
+            <FlatButton
+                label="Cancel"
+                primary={true}
+                onClick={this.handleCloseView}
+            />,
+
+        ];
+        const actionsDelete = [
+            <FlatButton
+                label="Cancel"
+                primary={true}
+                onClick={this.handleCloseDelete}
+            />,
+            <FlatButton
+                label="Delete"
+                //primary={true}
+                onClick={this.handleDelete}
+                labelStyle={styles.deleteColor}
+            />,
+        ];
+
         return (
             <div className="tablePostsDiv">
                 <Table
                     height={this.state.height}
                     fixedHeader={true}
-                    //onCellClick={this.handleOpen}
-                    onRowSelection={this.handleOpen}
+                    onCellClick={this.handleOpen}
+                // onRowSelection={this.handleOpen}
 
                 >
                     <TableHeader
                         displaySelectAll={false}
-                        adjustForCheckbox={true}
+                        adjustForCheckbox={false}
 
                     >
 
                         <TableRow>
-                            <TableHeaderColumn tooltip="Serial No">#</TableHeaderColumn>
+                            {/* <TableHeaderColumn tooltip="Serial No">#</TableHeaderColumn> */}
                             <TableHeaderColumn tooltip="Job Title">Job Title</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Company">Company</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Posted On">PostedOn</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Posted By">PostedBy</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Posted On">Posted On</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Posted For">Posted For</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="View Details">View Details</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Edit">Edit</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="Delete">Delete</TableHeaderColumn>
                         </TableRow>
                     </TableHeader>
                     <TableBody
-                        displayRowCheckbox={true}
+                        displayRowCheckbox={false}
 
                         showRowHover={true}
                         stripedRows={false}
@@ -277,14 +428,21 @@ export default class ManagePostForm extends Component {
 
 
                             <TableRow key={index}>
-                                <TableRowColumn>{index}</TableRowColumn>
+                                {/* <TableRowColumn>{index}</TableRowColumn> */}
                                 <TableRowColumn>{post.title}</TableRowColumn>
                                 <TableRowColumn>{post.company}</TableRowColumn>
-                                <TableRowColumn>{post.posted_on}</TableRowColumn>
+                                <TableRowColumn>{post.postedon}</TableRowColumn>
                                 <TableRowColumn>{post.postedby}</TableRowColumn>
-                                {/* <TableRowColumn><i className="far fa-edit"></i></TableRowColumn>
+                                <TableRowColumn>
+                                    <IconButton tooltip="View Details" tooltipPosition="top-center">
 
-                                <TableRowColumn><i className="fas fa-trash-alt"></i></TableRowColumn> */}
+
+                                        <i className="fas fa-eye" aria-hidden="true"></i>
+                                    </IconButton>
+                                    {/* <i className="fas fa-eye"></i>  */}
+                                </TableRowColumn>
+                                <TableRowColumn><i className="far fa-edit"></i></TableRowColumn>
+                                <TableRowColumn><i className="fas fa-trash-alt"></i></TableRowColumn>
                             </TableRow>
                         ))}
                     </TableBody>
@@ -307,7 +465,7 @@ export default class ManagePostForm extends Component {
 
 
                 <Dialog
-                    title="Edit / Delete Post"
+                    title="Edit Post"
                     actions={actions}
                     modal={true}
                     open={this.state.open}
@@ -337,11 +495,136 @@ export default class ManagePostForm extends Component {
                                     value={this.state.title}
                                     floatingLabelStyle={styles.floatingLabelStyle}
                                     floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                                    errorText={this.state.titleError}
+                                />
+                            </Col>
+                            <Col sm={6}>
+                                <TextField
+                                    hintText="Organization Name"
+                                    floatingLabelText="Organization Name"
+                                    fullWidth={true}
+                                    value={this.state.company}
+                                    onChange={this.handleCompanyChange}
+                                    id="company"
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                                    errorText={this.state.companyError}
+                                />
+                            </Col>
+                        </Row>
+
+                        <Row className="show-grid">
+                            <Col sm={6}>
+                                <TextField
+                                    hintText="Locations"
+                                    floatingLabelText="Locations"
+                                    fullWidth={true}
+                                    onChange={this.handleLocationChange}
+                                    id="locations"
+                                    value={this.state.location}
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                                    errorText={this.state.locationError}
+                                />
+                            </Col>
+                            <Col sm={6}>
+                                <TextField
+                                    hintText="Name (abc@gmail.com)"
+                                    floatingLabelText="Post By"
+                                    fullWidth={true}
+                                    value={this.state.postedby}
+                                    onChange={this.handlePostedByChange}
+                                    id="postby"
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                                    errorText={this.state.postedbyError}
+                                />
+                            </Col>
+                        </Row>
+
+                        <Row className="show-grid">
+                            <Col sm={12}>
+                                <TextField
+                                    hintText="Requirements"
+                                    floatingLabelText="Requirements"
+                                    fullWidth={true}
+                                    multiLine={true}
+                                    onChange={this.handleRequirementsChange}
+                                    value={this.state.requirements}
+                                    id="requirements"
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                                    errorText={this.state.requirementsError}
+                                />
+                            </Col>
+
+                        </Row>
+
+                        <Row className="show-grid">
+                            <Col sm={12}>
+                                <TextField
+                                    hintText="Description"
+                                    floatingLabelText="Description"
+                                    fullWidth={true}
+                                    multiLine={true}
+                                    value={this.state.description}
+                                    onChange={this.handleDescriptionChange}
+
+                                    id="description"
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                                    errorText={this.state.descriptionError}
+                                />
+                            </Col>
+
+                        </Row>
+
+
+
+                    </Grid>
+                </Dialog>
+
+
+
+                <Dialog
+                    title="Post Details"
+                    actions={actionsView}
+                    modal={false}
+                    open={this.state.openView}
+                    onRequestClose={this.handleCloseView}
+                    autoScrollBodyContent={true}
+                >
+                    <Badge
+                        badgeContent={this.state.count}
+                        secondary={true}
+                        badgeStyle={{ top: 12, right: 12 }}
+                    >
+                        <IconButton tooltip="No. of applicants" touch={true} tooltipPosition="bottom-center">
+                            {/* <NotificationsIcon /> */}
+                            <i className="fa fa-users" aria-hidden="true"></i>
+                        </IconButton>
+                    </Badge>
+                    <Grid>
+
+                        <Row className="show-grid">
+                            <Col sm={6}>
+                                <TextField
+                                    disabled={true}
+                                    hintText="Job Title"
+                                    floatingLabelText="Job Title"
+                                    fullWidth={true}
+                                    onChange={this.handleTiltleChange}
+                                    id="jobTitle"
+                                    value={this.state.title}
+                                    floatingLabelStyle={styles.floatingLabelStyle}
+                                    floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                                // className={styles.input}
 
                                 />
                             </Col>
                             <Col sm={6}>
                                 <TextField
+                                    disabled={true}
                                     hintText="Organization Name"
                                     floatingLabelText="Organization Name"
                                     fullWidth={true}
@@ -358,6 +641,7 @@ export default class ManagePostForm extends Component {
                         <Row className="show-grid">
                             <Col sm={6}>
                                 <TextField
+                                    disabled={true}
                                     hintText="Locations"
                                     floatingLabelText="Locations"
                                     fullWidth={true}
@@ -371,6 +655,7 @@ export default class ManagePostForm extends Component {
                             </Col>
                             <Col sm={6}>
                                 <TextField
+                                    disabled={true}
                                     hintText="Name (abc@gmail.com)"
                                     floatingLabelText="Post By"
                                     fullWidth={true}
@@ -387,6 +672,7 @@ export default class ManagePostForm extends Component {
                         <Row className="show-grid">
                             <Col sm={12}>
                                 <TextField
+                                    disabled={true}
                                     hintText="Requirements"
                                     floatingLabelText="Requirements"
                                     fullWidth={true}
@@ -405,6 +691,7 @@ export default class ManagePostForm extends Component {
                         <Row className="show-grid">
                             <Col sm={12}>
                                 <TextField
+                                    disabled={true}
                                     hintText="Description"
                                     floatingLabelText="Description"
                                     fullWidth={true}
@@ -424,7 +711,18 @@ export default class ManagePostForm extends Component {
 
 
                     </Grid>
+                    <ApplicantsList list={this.state.applicants} />
                 </Dialog>
+
+                <Dialog
+                    actions={actionsDelete}
+                    modal={false}
+                    open={this.state.openDelete}
+                    onRequestClose={this.handleCloseDelete}
+                >
+                    Are you sure you want to delete this post?
+        </Dialog>
+
             </div>
 
         );

@@ -10,6 +10,8 @@ import TextField from 'material-ui/TextField';
 import Chip from 'material-ui/Chip';
 import { postCall } from '../services/api';
 import validator from 'validator';
+import IconButton from 'material-ui/IconButton';
+
 const styles = {
   chip: {
     margin: 4,
@@ -28,6 +30,9 @@ floatingLabelFocusStyle: {
 };
 
 var data = new FormData();
+var fileValid = false;
+var uploadValid=false;
+
 export default class PostCard extends React.Component {
 
   constructor(props) {
@@ -45,8 +50,12 @@ export default class PostCard extends React.Component {
       emailError:'',
       phoneError:'',
       uploadError:'',
+      expError:'',
+      skillsError:'',
       _postId:this.props.job._id,
-      _resumeId:''
+      _resumeId:'',
+      exp:'',
+      skills:''
     };
 
     this.handleExpandChange = this.handleExpandChange.bind(this);
@@ -61,6 +70,8 @@ export default class PostCard extends React.Component {
     this.handleNameChange = this.handleNameChange.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
     this.handlePhoneChange = this.handlePhoneChange.bind(this);
+    this.handleExpChange = this.handleExpChange.bind(this);
+    this.handleSkillsChange = this.handleSkillsChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
    
@@ -88,20 +99,37 @@ export default class PostCard extends React.Component {
         })
 
     }
-    if (validator.isEmpty(this.state.phone)) {
+    if (validator.isEmpty(this.state.phone)||!validator.isLength(this.state.phone,10)||!validator.isNumeric(this.state.phone)) {
       errorFlag = 1;
       this.setState({
-          phoneError: "Enter Phone Number"
+          phoneError: "Enter Valid Moblie Number"
       })
 
   }
-//   if (validator.isEmpty(this.state.file)) {
-//     errorFlag = 1;
-//     this.setState({
-//         uploadError: "Upload Resume"
-//     })
+  if (validator.isEmpty(this.state.exp)) {
+    errorFlag = 1;
+    this.setState({
+        expError: "Enter Experiance"
+    })
+    
 
-// }
+}
+
+if (validator.isEmpty(this.state.skills)) {
+  errorFlag = 1;
+  this.setState({
+      skillsError: "Enter key Skills"
+  })
+
+}
+
+if (!fileValid||!uploadValid) {
+  errorFlag = 1;
+  this.setState({
+      uploadError: "Upload resume"
+  })
+
+}
 
     if (errorFlag == 1)
         return false;
@@ -117,23 +145,54 @@ clearErrorTexts() {
         emailError: '',
         phoneError: '',
         nameError:'',
-        uploadError:''
+        uploadError:'',
+        expError:'',
+        skillsError:''
     });
 
 }
 
 
   handleUploadFile(event) {
-    
+    var _validFileExtensions = [".pdf", ".doc", ".docx"];   
 
-    let reader = new FileReader();
-    let resumefile = event.target.files[0];
+    //let reader = new FileReader();
+    let resumefile = event.target.files[0].name;
 
 
     console.log(event.target.files[0]);
-    data.delete('file'); 
-    data.append('file', event.target.files[0]);
-    console.log(data);
+
+
+
+    if (resumefile.length > 0) {
+       fileValid = false;
+      for (var j = 0; j < _validFileExtensions.length; j++) {
+          var extension = _validFileExtensions[j];
+          if (resumefile.substr(resumefile.length - extension.length, extension.length).toLowerCase() == extension.toLowerCase()) {
+              fileValid = true;
+              break;
+          }
+      }
+      
+      if (!fileValid) {
+          alert("Sorry, " + resumefile + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
+          
+      }
+      else{
+        //alert('u can..');
+        data.delete('file'); 
+        data.append('file', event.target.files[0]);
+
+      }
+  }
+   
+   
+   
+      // data.delete('file'); 
+      // data.append('file', event.target.files[0]);
+      
+    
+    
    
 }
 
@@ -141,22 +200,30 @@ clearErrorTexts() {
 handleUpload() {
 
     var url = "fileUpload";
-    postCall(url, data)
-        .then((response) => {
-            console.log(response);
-            if (response.status == 200) {
-                alert("Upload Successful.....");
-                console.log("......", this);
-                this.setState({
-                  _resumeId:response.data._id
-                });
 
-            }
-            else {
-                alert("Upload Failure.....");
-            }
-        });
+    if(fileValid){
+      postCall(url, data)
+      .then((response) => {
+          // console.log(response);
+          if (response.status == 200) {
+              alert("Upload Successful.....");
+              // console.log("......", this);
+              uploadValid=true;
+              this.setState({
+                _resumeId:response.data._id
+              });
 
+          }
+          else {
+              alert("Upload Failure.....");
+          }
+      });
+
+    }
+    else{
+      alert('Invalid file type..');
+    }
+   
 }
 
 handleNameChange(event){
@@ -174,6 +241,19 @@ handlePhoneChange(event){
     phone:event.target.value
   });
 };
+
+handleExpChange(event){
+  this.setState({
+    exp:event.target.value
+  });
+};
+
+handleSkillsChange(event){
+  this.setState({
+    skills:event.target.value
+  });
+};
+
 handleSubmit(event){
 
   this.clearErrorTexts();
@@ -260,13 +340,22 @@ handleSubmit(event){
           className="cardHeader"
         />
         <CardText>
-          <Toggle
+
+           {/* <IconButton tooltip="View More" tooltipPosition="top-center"> */}
+
+
+             <Toggle
             toggled={this.state.expanded}
             onToggle={this.handleToggle}
             labelPosition="right"
             label={this.props.job.title}
             className="jobTitle"
+           
           />
+          {/* </IconButton> */}
+          
+          
+          
         </CardText>
         <CardMedia
           expandable={true}
@@ -340,6 +429,20 @@ handleSubmit(event){
 
                             />
                             </Col>
+                            <Col sm={6}>
+                        
+          <TextField
+                hintText="Enter Experiance in years"
+                floatingLabelText="Experiance"
+                fullWidth={true}
+                id="experiance"
+                onChange={this.handleExpChange}
+                floatingLabelStyle={styles.floatingLabelStyle}
+                floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                errorText={this.state.expError}
+
+                            />
+                            </Col>
                             </Row>
 
           <Row className="show-grid">
@@ -353,6 +456,20 @@ handleSubmit(event){
                 floatingLabelStyle={styles.floatingLabelStyle}
                 floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
                 errorText={this.state.emailError}
+
+                            />
+                             </Col>
+                             <Col sm={6}>                  
+          <TextField
+                hintText="Enter Key Skills"
+                floatingLabelText="Key Skills"
+                fullWidth={true}
+                multiLine={true}
+                id="skills"
+                onChange={this.handleSkillsChange}
+                floatingLabelStyle={styles.floatingLabelStyle}
+                floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
+                errorText={this.state.skillsError}
 
                             />
                              </Col>

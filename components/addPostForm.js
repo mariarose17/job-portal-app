@@ -7,7 +7,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import { orange500, blue500, pink900, grey50 } from 'material-ui/styles/colors';
 import { postCall } from '../services/api';
 import Dialog from 'material-ui/Dialog';
-
+import validator from 'validator';
 import FlatButton from 'material-ui/FlatButton';
 
 
@@ -43,7 +43,13 @@ export default class AddPostForm extends Component {
             location: '',
             description: '',
             requirements: '',
-            open: false
+            open: false,
+            titleError: '',
+            companyError: '',
+            postedbyError: '',
+            locationError: '',
+            descriptionError: '',
+            requirementsError: ''
 
         };
 
@@ -59,7 +65,7 @@ export default class AddPostForm extends Component {
         this.handleClose = this.handleClose.bind(this);
     }
 
-    componentDidMount(){
+    componentDidMount() {
         window.history.forward();
     }
     handleTiltleChange(event) {
@@ -89,27 +95,105 @@ export default class AddPostForm extends Component {
     handleClose() {
         this.setState({ open: false });
     }
+
+    handleValidations() {
+        var errorFlag = 0;
+
+        if (validator.isEmpty(this.state.title)) {
+            errorFlag = 1;
+            this.setState({
+                titleError: "Enter job title"
+            })
+
+        }
+
+        if (validator.isEmpty(this.state.postedby)) {
+            errorFlag = 1;
+            this.setState({
+                postedbyError: "Enter posted for data"
+            })
+
+        }
+
+        if (validator.isEmpty(this.state.company)) {
+            errorFlag = 1;
+            this.setState({
+                companyError: "Enter Organization name"
+            })
+
+        }
+        if (validator.isEmpty(this.state.location)) {
+            errorFlag = 1;
+            this.setState({
+                locationError: "Enter job locations"
+            })
+
+        }
+        if (validator.isEmpty(this.state.description)) {
+            errorFlag = 1;
+            this.setState({
+                descriptionError: "Enter description"
+            })
+
+
+        }
+
+        if (validator.isEmpty(this.state.requirements)) {
+            errorFlag = 1;
+            this.setState({
+                requirementsError: "Enter requirements"
+            })
+
+        }
+
+        
+        if (errorFlag == 1)
+            return false;
+        else
+            return true;
+
+
+    }
+
+    clearErrorTexts() {
+
+        this.setState({
+            titleError: '',
+            companyError: '',
+            postedbyError: '',
+            locationError: '',
+            descriptionError: '',
+            requirementsError: ''
+        });
+
+    }
+
+
+
     handleSubmit(event) {
         //this.setState({ postedon: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() });
         // console.log(date);
         // console.log(this.state.postedon);
 
         var url = "posts";
-        postCall(url, this.state).then(function (response) {
+        if(this.handleValidations()){
+            postCall(url, this.state).then(function (response) {
 
-            console.log(response);
-            if (response.status == 200) {
-                alert("Successful.....");
-               // this.handleOpen();
-
+                console.log(response);
+                if (response.status == 200) {
+                    alert("Successful.....");
+                    // this.handleOpen();
+    
+                }
+                else {
+                    alert("Failure.....");
+                }
             }
-            else {
-                alert("Failure.....");
-            }
+    
+            );
+    
         }
-
-        );
-
+    
     }
 
 
@@ -128,7 +212,7 @@ export default class AddPostForm extends Component {
             // />,
         ];
         return (
-            <div>
+            <div className="tablePostsDiv">
                 <center>
                     <h1>Add Post</h1>
                 </center>
@@ -144,7 +228,7 @@ export default class AddPostForm extends Component {
                                 id="jobTitle"
                                 floatingLabelStyle={styles.floatingLabelStyle}
                                 floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
-
+                                errorText={this.state.titleError}
                             />
                         </Col>
                         <Col sm={6}>
@@ -156,7 +240,7 @@ export default class AddPostForm extends Component {
                                 id="company"
                                 floatingLabelStyle={styles.floatingLabelStyle}
                                 floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
-
+                                errorText={this.state.companyError}
                             />
                         </Col>
                     </Row>
@@ -171,20 +255,20 @@ export default class AddPostForm extends Component {
                                 id="locations"
                                 floatingLabelStyle={styles.floatingLabelStyle}
                                 floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
-
+                                errorText={this.state.locationError}
                             />
                         </Col>
                         <Col sm={6}>
                             <TextField
                                 hintText="Name (abc@gmail.com)"
-                                floatingLabelText="Post By"
+                                floatingLabelText="Posted For"
                                 fullWidth={true}
 
                                 onChange={this.handlePostedByChange}
                                 id="postby"
                                 floatingLabelStyle={styles.floatingLabelStyle}
                                 floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
-
+                                errorText={this.state.postedbyError}
                             />
                         </Col>
                     </Row>
@@ -200,7 +284,7 @@ export default class AddPostForm extends Component {
                                 id="requirements"
                                 floatingLabelStyle={styles.floatingLabelStyle}
                                 floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
-
+                                errorText={this.state.requirementsError}
                             />
                         </Col>
 
@@ -217,7 +301,7 @@ export default class AddPostForm extends Component {
                                 id="description"
                                 floatingLabelStyle={styles.floatingLabelStyle}
                                 floatingLabelFocusStyle={styles.floatingLabelFocusStyle}
-
+                                errorText={this.state.descriptionError}
                             />
                         </Col>
 
