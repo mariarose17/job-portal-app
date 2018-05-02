@@ -88,9 +88,7 @@ a{
 .fas fa-trash-alt{
     font-size: 20px;
 } */
-.svg-inline--fa{
-    font-size: 15px;
-}
+
 
 .tablePostsDiv{
     margin-left: 280px;
@@ -98,7 +96,7 @@ a{
 }
 
 .svg-inline--fa {
-    font-size: 25px !important;
+    font-size: 21px !important;
 }
 
 .postViewContent{
@@ -126,4 +124,13 @@ a{
 .listHd{
     color: #c60c58 !important;
     margin-top: 30px;
+}
+
+.iconBtn{
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.admintxt{
+    padding-left: 18px !important;
 }

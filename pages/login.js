@@ -6,6 +6,7 @@ import TextField from 'material-ui/TextField';
 import { orange500, blue500 } from 'material-ui/styles/colors';
 import { postCall } from '../services/api';
 import validator from 'validator';
+import Navtop from '../components/navtop';
 
 export default class Login extends React.Component {
 
@@ -78,18 +79,24 @@ export default class Login extends React.Component {
     handleSubmit(event) {
         this.clearErrorTexts();
         if (this.handleValidations()) {
-            postCall('login', this.state).then((response) => {
+            postCall('adminlogin', this.state).then((response) => {
                 if (response.status == 200) {
-                    console.log("sucessful...." + response.data);
+                    //console.log(response);
+                    //alert(JSON.stringify(response.headers.auth));
+                    this.auth = response.headers.auth;
 
+                    localStorage.setItem('authdata', JSON.stringify(this.auth));
+                    //alert(JSON.stringify(this.auth));
                     this.props.history.push({
-                        pathname: '/adminPage'
+                        pathname: '/adminPage',
+                        state: { isLoggedIn: true }
+
                     });
                 }
                 if (response.status != 200) {
-                  alert("Login failure..Invalid login credentials");
+                    alert("Login failure..Invalid login credentials");
 
-                  
+
                 }
             }, (err) => {
                 alert("Invalid login credentials...");
@@ -103,7 +110,7 @@ export default class Login extends React.Component {
     render() {
         return (
             <div>
-
+                <Navtop />
 
                 <Grid>
 

@@ -82,7 +82,9 @@ export default class ManagePostForm extends Component {
             postedbyError: '',
             locationError: '',
             descriptionError: '',
-            requirementsError: ''
+            requirementsError: '',
+            openAlert: false,
+            alertMsg: ''
             // page: 0,
             // rowsPerPage: 5,
 
@@ -102,13 +104,14 @@ export default class ManagePostForm extends Component {
         this.handleRequirementsChange = this.handleRequirementsChange.bind(this);
         this.handleCloseView = this.handleCloseView.bind(this);
         this.handleCloseDelete = this.handleCloseDelete.bind(this)
+        this.handleCloseAlert = this.handleCloseAlert.bind(this);
         // this.handleChangePage = this.handleChangePage.bind(this);
         // this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     }
 
     componentDidMount() {
 
-        var url = "";
+        var url = "adminHome";
         getCall(url).then((response) => {
             console.log(response.data);
             if (response.status == 200) {
@@ -128,7 +131,13 @@ export default class ManagePostForm extends Component {
         window.history.forward();
 
     }
+    handleOpenAlert() {
+        this.setState({ openAlert: true });
+    };
 
+    handleCloseAlert() {
+        this.setState({ openAlert: false });
+    };
 
     handleValidations() {
         var errorFlag = 0;
@@ -220,14 +229,26 @@ export default class ManagePostForm extends Component {
 
                 console.log(response);
                 if (response.status == 200) {
-                    alert("Update Successful.....");
+                    //alert("Update Successful.....");
                     this.handleClose();
                     // this.handleOpen();
-                    window.location.reload();
+                    this.setState({
+
+                        alertMsg: 'Job post updated successfully...'
+                    });
+                    this.handleOpenAlert();
+                    this.componentDidMount();
+                    // window.location.reload();
+
 
                 }
-                else {
+                if (response.status != 200) {
                     alert("Update Failure.....");
+                    this.setState({
+
+                        alertMsg: 'Job post update failed...',
+                        openAlert: true
+                    });
                 }
             }
 
@@ -245,14 +266,25 @@ export default class ManagePostForm extends Component {
 
             console.log(response);
             if (response.status == 200) {
-                alert("Successful.....");
+                // alert("Successful.....");
                 this.handleCloseDelete();
+                this.setState({
+
+                    alertMsg: 'Job post deleted...',
+                    openAlert: true
+                });
                 // this.handleOpen();
-                window.location.reload();
+                this.componentDidMount();
+                //window.location.reload();
 
             }
-            else {
-                alert("Failure.....");
+            if (response.status != 200) {
+                // alert("Failure.....");
+                this.setState({
+
+                    alertMsg: 'Job post not deleted...',
+                    openAlert: true
+                });
             }
         }
 
@@ -263,7 +295,7 @@ export default class ManagePostForm extends Component {
 
     handleOpen(row, column, event) {
 
-        console.log("row..." + row + "column..." + column);
+        //console.log("row..." + row + "column..." + column);
 
         if (column == 4) {
             this.setState({
@@ -389,9 +421,19 @@ export default class ManagePostForm extends Component {
                 labelStyle={styles.deleteColor}
             />,
         ];
+        const actionsAlert = [
+            <FlatButton
+                label="OK"
+                primary={true}
+                onClick={this.handleCloseAlert}
+            />
+        ];
 
         return (
             <div className="tablePostsDiv">
+                <center>
+                    <h5>JOB POSTS</h5>
+                </center>
                 <Table
                     height={this.state.height}
                     fixedHeader={true}
@@ -411,7 +453,7 @@ export default class ManagePostForm extends Component {
                             <TableHeaderColumn tooltip="Company">Company</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Posted On">Posted On</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Posted For">Posted For</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="View Details">View Details</TableHeaderColumn>
+                            <TableHeaderColumn tooltip="View Details">View</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Edit">Edit</TableHeaderColumn>
                             <TableHeaderColumn tooltip="Delete">Delete</TableHeaderColumn>
                         </TableRow>
@@ -433,13 +475,10 @@ export default class ManagePostForm extends Component {
                                 <TableRowColumn>{post.company}</TableRowColumn>
                                 <TableRowColumn>{post.postedon}</TableRowColumn>
                                 <TableRowColumn>{post.postedby}</TableRowColumn>
-                                <TableRowColumn>
-                                    <IconButton tooltip="View Details" tooltipPosition="top-center">
+                                <TableRowColumn tooltip="View Details">
 
+                                    <i className="fas fa-eye" aria-hidden="true"></i>
 
-                                        <i className="fas fa-eye" aria-hidden="true"></i>
-                                    </IconButton>
-                                    {/* <i className="fas fa-eye"></i>  */}
                                 </TableRowColumn>
                                 <TableRowColumn><i className="far fa-edit"></i></TableRowColumn>
                                 <TableRowColumn><i className="fas fa-trash-alt"></i></TableRowColumn>
@@ -721,7 +760,15 @@ export default class ManagePostForm extends Component {
                     onRequestClose={this.handleCloseDelete}
                 >
                     Are you sure you want to delete this post?
-        </Dialog>
+                </Dialog>
+                <Dialog
+                    actions={actionsAlert}
+                    modal={false}
+                    open={this.state.openAlert}
+                    onRequestClose={this.handleCloseAlert}
+                >
+                    {this.state.alertMsg}
+                </Dialog>
 
             </div>
 

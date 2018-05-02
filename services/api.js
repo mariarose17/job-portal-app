@@ -2,20 +2,20 @@ import axios from 'axios';
 
 const BASE_URL='http://localhost:3000/jobportal/';
 
-// axios.interceptors.request.use((config) => {
-//     const authValue = JSON.parse(localStorage.getItem('authdata'));
-//     console.log(authValue);
-// 	if( authValue ) {
+axios.interceptors.request.use((config) => {
+    const authValue = JSON.parse(localStorage.getItem('authdata'));
+    console.log(authValue);
+	if( authValue ) {
 		
-// 		config.headers['Auth'] = authValue;
+		config.headers['auth'] = authValue;
 	
-// 		return config;
-// 	}
-// 	else {
+		return config;
+	}
+	else {
 	
-// 		return config;
-// 	}
-// });
+		return config;
+	}
+});
 
 export function getCall(url,params=null){
     return axios.get(BASE_URL+url,{params:params});

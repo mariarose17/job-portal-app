@@ -3,6 +3,7 @@ import SideNav, { Nav, NavIcon, NavText } from 'react-sidenav';
 import { NavLink } from 'reactstrap';
 import { Image } from 'react-bootstrap';
 import { getCall } from '../services/api';
+import { deleteCall } from '../services/api';
 import { Link } from 'react-router-dom';
 import Avatar from 'material-ui/Avatar';
 import FileFolder from 'material-ui/svg-icons/file/folder';
@@ -17,11 +18,20 @@ import {
     deepOrange300,
     pink400,
     purple500,
+    teal50,
+    grey900,
+    green100
+
+
+
+
+
 } from 'material-ui/styles/colors';
 
 
 
 import { Dropdown, DropdownItem, DropdownToggle, DropdownMenu } from 'reactstrap';
+
 
 export default class MySideNav extends React.Component {
     constructor(props) {
@@ -36,7 +46,7 @@ export default class MySideNav extends React.Component {
         this.toggle = this.toggle.bind(this);
         this.logout = this.logout.bind(this);
         //window.history.forward();
-
+        // console.log(this.props.isLogin);
     }
 
     toggle() {
@@ -46,7 +56,14 @@ export default class MySideNav extends React.Component {
     }
 
     logout() {
-        localStorage.clear();
+        //console.log("inside delete front");
+        deleteCall("logout").then(function (response) {
+            if (response.status == 200) {
+                //alert('logging out');
+                localStorage.clear();
+            }
+        });
+
     }
 
     componentDidMount() {
@@ -57,52 +74,58 @@ export default class MySideNav extends React.Component {
 
 
     render() {
-        return (
-            <div className="mySide">
+        // console.log(this.props.isLogin);
+        if (this.props.isLogin) {
+            return (
+                <div className="mySide">
 
-                <SideNav defaultSelected="jobPosts" highlightColor='#fff' highlightBgColor='#9f306d'>
-                    <Nav id='list'>
-                        {/* <NavIcon><SvgIcon size={20} icon={ic_aspect_ratio}/></NavIcon>     */}
-                        <NavIcon>
-                            <Avatar>A</Avatar>
-                            {/* <ListItem
-                                disabled={true}
-                                leftAvatar={<Avatar>A</Avatar>}
-                            >
-                                Letter Avatar
-                            </ListItem> */}
+                    <SideNav defaultSelected="jobPosts" highlightColor='#fff' highlightBgColor='#9f306d'>
+                        <Nav id='list'>
+                            {/* <NavIcon><SvgIcon size={20} icon={ic_aspect_ratio}/></NavIcon>     */}
+                            <NavIcon>
+                                {/* <Avatar>A</Avatar> */}
+                                <Avatar
+                                    color={grey900}                                    
+                                    backgroundColor={green100
+                                    }
+                                    size={30}
+                                    // style={style}
+                                >
+                                    A
+                               </Avatar>
+
+                            </NavIcon>
+                            <NavText className='admintxt'>
+
+                                Administrator
+
+                            </NavText>
+                        </Nav>
+                        <Nav id="jobPosts">
+                            <NavIcon> <span className="fas fa-columns"></span></NavIcon>
+                            <NavText><NavLink className="adminNavLink" tag={Link} to="/managepost">Job Posts</NavLink></NavText>
+                            {/* <NavText> Dashboard </NavText> */}
+
+                        </Nav>
+
+                        <Nav id="addPost">
+                            <NavIcon> <span className="fas fa-clipboard"></span></NavIcon>
+                            <NavText><NavLink className="adminNavLink" tag={Link} to="/addpost">Add Post</NavLink></NavText>
+                            {/* <NavText> Dashboard </NavText> */}
+
+                        </Nav>
+                        <Nav id="logout">
+                            <NavIcon> <span className="fas fa-sign-out-alt"></span></NavIcon>
+                            <NavText><NavLink className="adminNavLink" onClick={this.logout} tag={Link} to="/">Logout</NavLink></NavText>
+                        </Nav>
+                    </SideNav>
+                </div>
 
 
-                            {/* <Image className="proimage" src="" /> */}
-                        </NavIcon>
-                        <NavText>
+            );
 
-                            Administrator
+        }
 
-                        </NavText>
-                    </Nav>
-                    <Nav id="jobPosts">
-                        <NavIcon> <span className="fas fa-columns"></span></NavIcon>
-                        <NavText><NavLink className="adminNavLink" tag={Link} to="/managepost">Job Posts</NavLink></NavText>
-                        {/* <NavText> Dashboard </NavText> */}
-
-                    </Nav>
-
-                    <Nav id="addPost">
-                        <NavIcon> <span className="fas fa-columns"></span></NavIcon>
-                        <NavText><NavLink className="adminNavLink" tag={Link} to="/addpost">Add Post</NavLink></NavText>
-                        {/* <NavText> Dashboard </NavText> */}
-
-                    </Nav>
-                    <Nav id="logout">
-                        <NavIcon> <span className="fas fa-cog"></span></NavIcon>
-                        <NavText><NavLink className="adminNavLink" tag={Link} to="/">Logout</NavLink></NavText>
-                    </Nav>
-                </SideNav>
-            </div>
-
-
-        );
     }
 
 }

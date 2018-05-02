@@ -43,13 +43,14 @@ export default class AddPostForm extends Component {
             location: '',
             description: '',
             requirements: '',
-            open: false,
             titleError: '',
             companyError: '',
             postedbyError: '',
             locationError: '',
             descriptionError: '',
-            requirementsError: ''
+            requirementsError: '',
+            openAlert: false,
+            alertMsg: ''
 
         };
 
@@ -61,12 +62,14 @@ export default class AddPostForm extends Component {
         this.handleDescriptionChange = this.handleDescriptionChange.bind(this);
         this.handleRequirementsChange = this.handleRequirementsChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.handleOpen = this.handleOpen.bind(this);
-        this.handleClose = this.handleClose.bind(this);
+        this.handleCloseAlert = this.handleCloseAlert.bind(this);
+        this.handleOpenAlert = this.handleOpenAlert.bind(this);
+        this.clearDataTexts = this.clearDataTexts.bind(this);
     }
 
     componentDidMount() {
         window.history.forward();
+
     }
     handleTiltleChange(event) {
         this.setState({ title: event.target.value });
@@ -146,7 +149,7 @@ export default class AddPostForm extends Component {
 
         }
 
-        
+
         if (errorFlag == 1)
             return false;
         else
@@ -168,35 +171,67 @@ export default class AddPostForm extends Component {
 
     }
 
+    clearDataTexts() {
 
+        this.setState({
+            title: '',
+            company: '',
+            postedby: '',
+            location: '',
+            description: '',
+            requirements: ''
+        });
 
-    handleSubmit(event) {
-        //this.setState({ postedon: date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() });
-        // console.log(date);
-        // console.log(this.state.postedon);
-
-        var url = "posts";
-        if(this.handleValidations()){
-            postCall(url, this.state).then(function (response) {
-
-                console.log(response);
-                if (response.status == 200) {
-                    alert("Successful.....");
-                    // this.handleOpen();
-    
-                }
-                else {
-                    alert("Failure.....");
-                }
-            }
-    
-            );
-    
-        }
-    
     }
 
 
+
+    handleSubmit(event) {
+
+        this.clearErrorTexts();
+        var url = "posts";
+        if (this.handleValidations()) {
+            postCall(url, this.state).then((response) => {
+
+                console.log(response);
+                if (response.status == 200) {
+                    //alert("Successful.....");
+
+                    this.setState({
+
+                        openAlert: true,
+                        alertMsg: 'Post added successfully...'
+
+                    });
+                    //window.setTimeout(window.location.reload(), 10000);
+                    //window.location.reload();
+
+                }
+                if (response.status != 200) {
+                    //alert("Failure.....");
+                    this.setState({
+                        openAlert: true,
+                        alertMsg: 'Post add action failed...'
+                    });
+                }
+            }
+
+            );
+
+        }
+
+    }
+
+    handleOpenAlert() {
+        this.setState({ openAlert: true });
+    };
+
+    handleCloseAlert() {
+        this.setState({
+            openAlert: false
+        });
+        window.location.reload();
+    };
     render() {
 
         const actions = [
@@ -211,10 +246,17 @@ export default class AddPostForm extends Component {
             //     onClick={this.handleClose}
             // />,
         ];
+        const actionsAlert = [
+            <FlatButton
+                label="OK"
+                primary={true}
+                onClick={this.handleCloseAlert}
+            />
+        ];
         return (
             <div className="tablePostsDiv">
                 <center>
-                    <h1>Add Post</h1>
+                    <h1>ADD POST</h1>
                 </center>
                 <Grid>
 
@@ -326,13 +368,13 @@ export default class AddPostForm extends Component {
                 </Grid>
 
                 <Dialog
-                    actions={actions}
+                    actions={actionsAlert}
                     modal={false}
-                    open={this.state.open}
-                    onRequestClose={this.handleClose}
+                    open={this.state.openAlert}
+                    onRequestClose={this.handleCloseAlert}
                 >
-                    Added Successfully...
-                  </Dialog>
+                    {this.state.alertMsg}
+                </Dialog>
 
             </div>
         );
