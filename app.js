@@ -6,6 +6,7 @@ import Login from './pages/login';
 import AdminPanel from './pages/adminPage';
 import AddPost from './pages/addPostPage';
 import ManagePost from './pages/managePostsPage';
+import AddPostCsv from './pages/addPostsCsvPage';
 
 class App extends Component {
   render() {
@@ -39,6 +40,11 @@ class App extends Component {
             <Route
               path="/managepost"
               component={ManagePost}
+
+            />
+            <Route
+              path="/addposts"
+              component={AddPostCsv}
 
             />
 

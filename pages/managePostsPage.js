@@ -10,7 +10,7 @@ export default class ManagePost extends React.Component {
         return (
             <div>
                 {/* <Topnav /> */}
-                <MySideNav isLogin={this.isLogin} />
+                <MySideNav isLogin={this.isLogin} select='jobPosts'/>
                 <ManagePostForm />
             </div>
         );

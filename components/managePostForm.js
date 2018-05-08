@@ -33,12 +33,7 @@ import {
 
 
 const styles = {
-    // errorStyle: {
-    //   color: orange500,
-    // },
-    // underlineStyle: {
-    //   borderColor: orange500,
-    // },
+
     floatingLabelStyle: {
         color: deepOrange500,
     },
@@ -105,6 +100,9 @@ export default class ManagePostForm extends Component {
         this.handleCloseView = this.handleCloseView.bind(this);
         this.handleCloseDelete = this.handleCloseDelete.bind(this)
         this.handleCloseAlert = this.handleCloseAlert.bind(this);
+        this.handleViewUpdate = this.handleViewUpdate.bind(this);
+
+
         // this.handleChangePage = this.handleChangePage.bind(this);
         // this.handleChangeRowsPerPage = this.handleChangeRowsPerPage.bind(this);
     }
@@ -220,8 +218,15 @@ export default class ManagePostForm extends Component {
     //     this.setState({ rowsPerPage: event.target.value });
     // };
 
-    handleUpdate(event) {
+    handleViewUpdate(event) {
 
+        this.setState({
+            openView: false,
+            open: true
+        });
+    }
+
+    handleUpdate(event) {
 
         var url = "updatepost";
         if (this.handleValidations()) {
@@ -295,29 +300,24 @@ export default class ManagePostForm extends Component {
 
     handleOpen(row, column, event) {
 
-        //console.log("row..." + row + "column..." + column);
-
         if (column == 4) {
             this.setState({
                 openView: true,
-                // open: false,
-                // openDelete: false
+
             });
 
         }
         if (column == 5) {
             this.setState({
                 open: true,
-                // openView: false,
-                // openDelete: false
+
             });
 
         }
         if (column == 6) {
             this.setState({
                 openDelete: true,
-                // open: false,
-                // openView: false,
+
             });
 
         }
@@ -329,10 +329,9 @@ export default class ManagePostForm extends Component {
                 count: response.data.length,
                 applicants: response.data
             });
-            console.log("count..." + response.data.length);
 
         });
-        console.log(this.state.posts[row]);
+
         this.setState({
             title: this.state.posts[row].title,
             company: this.state.posts[row].company,
@@ -344,9 +343,7 @@ export default class ManagePostForm extends Component {
             _postId: this.state.posts[row]._id,
         });
 
-        // getCall(this.state.posts[key]._id).then((response) => {
 
-        // });
     };
 
     handleClose() {
@@ -406,6 +403,12 @@ export default class ManagePostForm extends Component {
                 primary={true}
                 onClick={this.handleCloseView}
             />,
+            <FlatButton
+                label="Edit"
+                secondary={true}
+                keyboardFocused={true}
+                onClick={this.handleViewUpdate}
+            />,
 
         ];
         const actionsDelete = [
@@ -432,7 +435,7 @@ export default class ManagePostForm extends Component {
         return (
             <div className="tablePostsDiv">
                 <center>
-                    <h5>JOB POSTS</h5>
+                    <h5 className="hdAdminPosts">JOB POSTS</h5>
                 </center>
                 <Table
                     height={this.state.height}
@@ -466,14 +469,17 @@ export default class ManagePostForm extends Component {
                     >
                         {/* data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) */}
                         {this.state.posts.map((post, index) => (
-
+                            // date = new Date(post.postedon); 
 
 
                             <TableRow key={index}>
                                 {/* <TableRowColumn>{index}</TableRowColumn> */}
                                 <TableRowColumn>{post.title}</TableRowColumn>
                                 <TableRowColumn>{post.company}</TableRowColumn>
-                                <TableRowColumn>{post.postedon}</TableRowColumn>
+                                <TableRowColumn>{
+                                    // post.postedon
+                                    new Date(post.postedon).toLocaleDateString('en-US')
+                                }</TableRowColumn>
                                 <TableRowColumn>{post.postedby}</TableRowColumn>
                                 <TableRowColumn tooltip="View Details">
 

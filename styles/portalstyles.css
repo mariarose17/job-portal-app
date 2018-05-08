@@ -134,3 +134,14 @@ a{
 .admintxt{
     padding-left: 18px !important;
 }
+
+.hdAdminPosts{
+    color: #9f306d;
+    font-weight: bolder;
+}
+.csvLink{
+    color: black !important;
+}
+.paper{
+    width: -webkit-fill-available !important;
+}

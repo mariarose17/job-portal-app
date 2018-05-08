@@ -192,7 +192,7 @@ export default class PostCard extends React.Component {
         //alert("Sorry, " + resumefile + " is invalid, allowed extensions are: " + _validFileExtensions.join(", "));
         this.setState({
           openAlert: true,
-          alertMsg: "Sorry, " + resumefile + " is invalid, allowed extensions are: " + _validFileExtensions.join(", ")
+          alertMsg: "Sorry, " + resumefile + " is invalid file type, allowed extensions are: " + _validFileExtensions.join(", ")
         });
       }
       else {
@@ -229,6 +229,7 @@ export default class PostCard extends React.Component {
             this.setState({
               _resumeId: response.data._id,
               openAlert: true,
+              uploadError: '',
               alertMsg: 'File Uploaded successfully...'
             });
 

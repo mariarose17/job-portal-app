@@ -9,6 +9,7 @@ import { postCall } from '../services/api';
 import Dialog from 'material-ui/Dialog';
 import validator from 'validator';
 import FlatButton from 'material-ui/FlatButton';
+import Paper from 'material-ui/Paper';
 
 
 
@@ -258,6 +259,8 @@ export default class AddPostForm extends Component {
                 <center>
                     <h1>ADD POST</h1>
                 </center>
+
+
                 <Grid>
 
                     <Row className="show-grid">

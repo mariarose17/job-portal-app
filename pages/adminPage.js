@@ -12,7 +12,7 @@ export default class AdminPanel extends React.Component {
         return (
             <div>
                 
-                <MySideNav isLogin={this.props.location.state.isLoggedIn}/>
+                <MySideNav isLogin={this.props.location.state.isLoggedIn} select='jobPosts'/>
                 <ManagePostForm />
             </div>
         );

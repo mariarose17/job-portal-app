@@ -7,6 +7,8 @@ import { orange500, blue500 } from 'material-ui/styles/colors';
 import { postCall } from '../services/api';
 import validator from 'validator';
 import Navtop from '../components/navtop';
+import FlatButton from 'material-ui/FlatButton';
+import Dialog from 'material-ui/Dialog';
 
 export default class Login extends React.Component {
 
@@ -16,16 +18,15 @@ export default class Login extends React.Component {
             email: '',
             password: '',
             emailError: '',
-            passwordError: ''
+            passwordError: '',
+            alertMsg: ''
         };
 
         this.handleEmailChange = this.handleEmailChange.bind(this);
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
-        //this.handleValidations = this.handleValidations.bind(this);
-        //this.clearErrorTexts = this.clearErrorTexts.bind(this);
-        // localStorage.clear();
+        this.handleCloseAlert = this.handleCloseAlert.bind(this);
         window.history.forward();
     }
 
@@ -35,6 +36,7 @@ export default class Login extends React.Component {
             errorFlag = 1;
             this.setState({
                 emailError: "Invalid email address"
+               
             })
 
         }
@@ -66,6 +68,15 @@ export default class Login extends React.Component {
 
     }
 
+
+    handleOpenAlert() {
+        this.setState({ openAlert: true });
+    };
+
+    handleCloseAlert() {
+        this.setState({ openAlert: false });
+    };
+
     handleEmailChange(event) {
         this.setState({ email: event.target.value });
     }
@@ -94,12 +105,21 @@ export default class Login extends React.Component {
                     });
                 }
                 if (response.status != 200) {
-                    alert("Login failure..Invalid login credentials");
+                    // alert("Login failure..Invalid login credentials");
+                    this.setState({
 
+                        openAlert: true,
+                        alertMsg: 'Login failure..Invalid login credentials'
+                    });
 
                 }
             }, (err) => {
-                alert("Invalid login credentials...");
+                // alert("Invalid login credentials...");
+                this.setState({
+
+                    openAlert: true,
+                    alertMsg: 'Invalid login credentials..'
+                });
             });
         }
 
@@ -108,6 +128,13 @@ export default class Login extends React.Component {
     }
 
     render() {
+        const actionsAlert = [
+            <FlatButton
+                label="OK"
+                primary={true}
+                onClick={this.handleCloseAlert}
+            />
+        ];
         return (
             <div>
                 <Navtop />
@@ -163,7 +190,14 @@ export default class Login extends React.Component {
 
 
                 </Grid>
-
+                <Dialog
+                    actions={actionsAlert}
+                    modal={false}
+                    open={this.state.openAlert}
+                    onRequestClose={this.handleCloseAlert}
+                >
+                    {this.state.alertMsg}
+                </Dialog>
             </div>
 
         );

@@ -5,8 +5,9 @@ import Navtop from '../components/navtop';
 import PostCard from '../components/postCard';
 import { getCall } from '../services/api';
 import { Grid, Row, Col } from 'react-bootstrap';
-
+import LazyLoad from 'react-lazy-load';
 import FlatPagination from 'material-ui-flat-pagination';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 export default class Home extends React.Component {
     constructor(props) {
@@ -15,7 +16,7 @@ export default class Home extends React.Component {
         this.state = {
             posts: [],
             jobs: [],
-            // offset: 0
+            len: 0
         }
 
         // this.handleClick = this.handleClick.bind(this);
@@ -32,10 +33,11 @@ export default class Home extends React.Component {
             if (response.status == 200) {
                 // alert("got data...");
                 //console.log(response);
-
+                var data = response.data;
                 this.setState({
                     posts: response.data,
-                    jobs: JSON.stringify(response.data)
+                    jobs: JSON.stringify(response.data),
+                    len: data.length
                 })
 
 
@@ -60,24 +62,45 @@ export default class Home extends React.Component {
             <div>
                 <Navtop />
 
-                <Grid>
 
-                    <Row>
+                {/* <InfiniteScroll
+                    dataLength={this.len} //This is important field to render the next data
+                    // next={fetchData}
+                    hasMore={true}
+                    loader={<h4>Loading...</h4>}
+                    endMessage={
+                        <p style={{ textAlign: 'center' }}>
+                            <b>Yay! You have seen it all</b>
+                        </p>
+                    }
+                    // below props only if you need pull down functionality                  
+                   > */}
 
-                        {this.state.posts.map((post, index) => (
+                <LazyLoad
+
+                    onContentVisible={() => console.log('look na I have been lazyloaded!')}
+                >
+                    <Grid>
+
+                        <Row>
+
+                            {this.state.posts.map((post, index) => (
 
 
-                            <PostCard job={post} />
-                        ))}
+                                <PostCard job={post} />
 
-                    </Row>
-                    {/* <FlatPagination
+                            ))}
+
+                        </Row>
+                        {/* <FlatPagination
                         offset={this.state.offset}
                         limit={1}
                         total={100}
                         onClick={(e, offset) => this.handleClick(offset)}
                     /> */}
-                </Grid>
+                    </Grid>
+                </LazyLoad>
+                {/* </InfiniteScroll> */}
 
             </div>
         );

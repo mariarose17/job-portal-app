@@ -79,17 +79,17 @@ export default class MySideNav extends React.Component {
             return (
                 <div className="mySide">
 
-                    <SideNav defaultSelected="jobPosts" highlightColor='#fff' highlightBgColor='#9f306d'>
+                    <SideNav defaultSelected={this.props.select} highlightColor='#fff' highlightBgColor='#9f306d'>
                         <Nav id='list'>
                             {/* <NavIcon><SvgIcon size={20} icon={ic_aspect_ratio}/></NavIcon>     */}
                             <NavIcon>
                                 {/* <Avatar>A</Avatar> */}
                                 <Avatar
-                                    color={grey900}                                    
+                                    color={grey900}
                                     backgroundColor={green100
                                     }
                                     size={30}
-                                    // style={style}
+                                // style={style}
                                 >
                                     A
                                </Avatar>
@@ -104,14 +104,19 @@ export default class MySideNav extends React.Component {
                         <Nav id="jobPosts">
                             <NavIcon> <span className="fas fa-columns"></span></NavIcon>
                             <NavText><NavLink className="adminNavLink" tag={Link} to="/managepost">Job Posts</NavLink></NavText>
-                            {/* <NavText> Dashboard </NavText> */}
-
+                         
                         </Nav>
 
                         <Nav id="addPost">
                             <NavIcon> <span className="fas fa-clipboard"></span></NavIcon>
                             <NavText><NavLink className="adminNavLink" tag={Link} to="/addpost">Add Post</NavLink></NavText>
-                            {/* <NavText> Dashboard </NavText> */}
+                         
+
+                        </Nav>
+                        <Nav id="addPosts">
+                            <NavIcon> <span className="fas fa-upload"></span></NavIcon>
+                            <NavText><NavLink className="adminNavLink" tag={Link} to="/addposts">Upload Posts</NavLink></NavText>
+                           
 
                         </Nav>
                         <Nav id="logout">
